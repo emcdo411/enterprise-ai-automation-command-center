@@ -1,0 +1,277 @@
+{
+  "metadata": {
+    "artifact": "Enterprise AI Automation Command Center",
+    "description": "Mock automation candidate dataset for finance, accounting, legal, and corporate operations use cases.",
+    "created_by": "Erwin Maurice McDonald",
+    "data_classification": "Synthetic / portfolio demonstration only",
+    "contains_confidential_data": false,
+    "version": "1.0.0"
+  },
+  "scoring_model": {
+    "scale": "1-5",
+    "dimensions": [
+      {
+        "name": "business_impact",
+        "description": "Expected operational, financial, reporting, or executive visibility value."
+      },
+      {
+        "name": "manual_effort_reduction",
+        "description": "Degree to which automation could reduce repeated manual work or spreadsheet dependency."
+      },
+      {
+        "name": "data_readiness",
+        "description": "Availability, structure, quality, and reliability of the data required."
+      },
+      {
+        "name": "integration_complexity",
+        "description": "Difficulty of connecting required systems through APIs, ETL, workflow tools, or file-based processes. Lower is easier."
+      },
+      {
+        "name": "risk_level",
+        "description": "Potential legal, financial, operational, compliance, or reputational harm if output is wrong. Lower is safer."
+      },
+      {
+        "name": "human_approval_need",
+        "description": "Degree to which human review is required before action or distribution."
+      },
+      {
+        "name": "executive_visibility",
+        "description": "Likelihood that leadership would care about improvement in this workflow."
+      }
+    ],
+    "recommendation_bands": {
+      "AUTOMATE_NOW": "High value, low-to-moderate risk, clear owner, sufficient data readiness.",
+      "PROTOTYPE_FIRST": "Strong candidate but should be validated through a controlled pilot.",
+      "HUMAN_IN_THE_LOOP": "AI can assist, but human judgment and approval remain required.",
+      "DECISION_SUPPORT_ONLY": "AI should summarize, classify, or recommend, but should not execute.",
+      "NEEDS_DATA_CLEANUP": "Workflow has potential, but data quality or process clarity blocks automation.",
+      "DO_NOT_AUTOMATE_YET": "Risk, ambiguity, or poor workflow fit makes automation premature."
+    }
+  },
+  "candidates": [
+    {
+      "id": "AUTO-001",
+      "name": "Monthly Finance Reporting Summary",
+      "department": "Finance",
+      "workflow_owner_role": "Finance Director",
+      "current_state": "Finance team consolidates reports from multiple exports and manually drafts monthly commentary for leadership.",
+      "systems_involved": [
+        "ERP / accounting platform",
+        "Excel",
+        "SQL reporting tables",
+        "email approvals"
+      ],
+      "manual_pain": "Recurring spreadsheet assembly, variance explanation drafting, and leadership-ready commentary consume review cycles.",
+      "automation_concept": "Finance Reporting Agent that drafts variance summaries from approved sources and routes commentary for finance approval.",
+      "scores": {
+        "business_impact": 5,
+        "manual_effort_reduction": 4,
+        "data_readiness": 3,
+        "integration_complexity": 3,
+        "risk_level": 3,
+        "human_approval_need": 4,
+        "executive_visibility": 5
+      },
+      "recommendation": "PROTOTYPE_FIRST",
+      "human_approval_gate": "Finance leadership approves all final commentary before distribution.",
+      "failure_definition": "Agent uses unapproved data, invents a variance explanation, or distributes commentary without finance approval.",
+      "first_30_day_action": "Prototype with one recurring report package and compare AI-drafted commentary against current manual output."
+    },
+    {
+      "id": "AUTO-002",
+      "name": "Accounting Close-Cycle Task Tracker",
+      "department": "Accounting",
+      "workflow_owner_role": "Controller",
+      "current_state": "Close status is tracked across spreadsheets, email follow-ups, and individual task owner updates.",
+      "systems_involved": [
+        "close checklist",
+        "Excel",
+        "email",
+        "accounting platform"
+      ],
+      "manual_pain": "Accounting leadership spends time chasing status, identifying blockers, and summarizing close readiness.",
+      "automation_concept": "Accounting Close Assistant that tracks close tasks, flags missing reconciliations, and summarizes blocker status.",
+      "scores": {
+        "business_impact": 5,
+        "manual_effort_reduction": 5,
+        "data_readiness": 4,
+        "integration_complexity": 2,
+        "risk_level": 3,
+        "human_approval_need": 4,
+        "executive_visibility": 4
+      },
+      "recommendation": "AUTOMATE_NOW",
+      "human_approval_gate": "Accounting leadership retains final close certification authority.",
+      "failure_definition": "Assistant marks a task complete without evidence or escalates an inaccurate blocker.",
+      "first_30_day_action": "Map the close checklist, owner list, deadlines, and exception categories into a prototype task tracker."
+    },
+    {
+      "id": "AUTO-003",
+      "name": "Legal Contract Intake Summarizer",
+      "department": "Legal",
+      "workflow_owner_role": "Legal Operations Lead",
+      "current_state": "Contract requests arrive with inconsistent context, missing documents, and unclear routing priority.",
+      "systems_involved": [
+        "contract repository",
+        "email",
+        "shared drive",
+        "request form"
+      ],
+      "manual_pain": "Legal team loses time clarifying request type, missing materials, and review urgency before substantive review begins.",
+      "automation_concept": "Legal Intake Agent that summarizes requests, extracts key terms, flags missing documents, and routes to legal review.",
+      "scores": {
+        "business_impact": 4,
+        "manual_effort_reduction": 4,
+        "data_readiness": 3,
+        "integration_complexity": 2,
+        "risk_level": 5,
+        "human_approval_need": 5,
+        "executive_visibility": 3
+      },
+      "recommendation": "HUMAN_IN_THE_LOOP",
+      "human_approval_gate": "Legal team approves all legal interpretations, redlines, and final positions.",
+      "failure_definition": "Agent gives legal advice, misses a high-risk clause, or treats missing documents as complete.",
+      "first_30_day_action": "Build a safe intake-only prototype that classifies request type and missing materials without providing legal judgment."
+    },
+    {
+      "id": "AUTO-004",
+      "name": "Vendor Onboarding Checklist",
+      "department": "Corporate Operations",
+      "workflow_owner_role": "Operations Manager",
+      "current_state": "Vendor onboarding steps are tracked manually with inconsistent follow-up and limited status visibility.",
+      "systems_involved": [
+        "vendor forms",
+        "email",
+        "shared drive",
+        "ERP / vendor master"
+      ],
+      "manual_pain": "Missing documents, approvals, and handoffs delay vendor setup and create repeated follow-up work.",
+      "automation_concept": "Vendor Onboarding Workflow that tracks required documents, routes approvals, and flags incomplete onboarding packages.",
+      "scores": {
+        "business_impact": 4,
+        "manual_effort_reduction": 4,
+        "data_readiness": 4,
+        "integration_complexity": 2,
+        "risk_level": 2,
+        "human_approval_need": 3,
+        "executive_visibility": 3
+      },
+      "recommendation": "AUTOMATE_NOW",
+      "human_approval_gate": "Operations owner approves onboarding completion before vendor activation.",
+      "failure_definition": "Workflow marks onboarding complete with missing documents or routes approval to the wrong owner.",
+      "first_30_day_action": "Convert current onboarding checklist into a structured workflow with owner, due date, and missing-document flags."
+    },
+    {
+      "id": "AUTO-005",
+      "name": "Manual Spreadsheet Consolidation",
+      "department": "Finance / Corporate Operations",
+      "workflow_owner_role": "Business Operations Lead",
+      "current_state": "Recurring reports are built from multiple spreadsheets with manual copy/paste, cleanup, and formula adjustments.",
+      "systems_involved": [
+        "Excel",
+        "CSV exports",
+        "SQL tables",
+        "email attachments"
+      ],
+      "manual_pain": "Manual consolidation creates time loss, formula risk, version confusion, and limited repeatability.",
+      "automation_concept": "Spreadsheet Replacement Pipeline that maps source systems, extracts repeatable logic, and creates a governed reporting flow.",
+      "scores": {
+        "business_impact": 5,
+        "manual_effort_reduction": 5,
+        "data_readiness": 2,
+        "integration_complexity": 4,
+        "risk_level": 3,
+        "human_approval_need": 4,
+        "executive_visibility": 4
+      },
+      "recommendation": "NEEDS_DATA_CLEANUP",
+      "human_approval_gate": "Business owner validates all calculations and output definitions before automation.",
+      "failure_definition": "Pipeline automates undocumented spreadsheet logic or reproduces a manual error at scale.",
+      "first_30_day_action": "Inventory source files, formulas, manual adjustments, and output audience before building automation."
+    },
+    {
+      "id": "AUTO-006",
+      "name": "Executive Status Digest",
+      "department": "Corporate Operations",
+      "workflow_owner_role": "Chief of Staff or Operations Leader",
+      "current_state": "Leadership updates are assembled manually from email threads, project notes, and department status reports.",
+      "systems_involved": [
+        "email",
+        "project tracker",
+        "shared documents",
+        "department status reports"
+      ],
+      "manual_pain": "Leadership lacks a consistent, concise view of blockers, decisions needed, and cross-functional status.",
+      "automation_concept": "Executive Status Agent that summarizes blockers, decisions needed, late items, and cross-functional dependencies.",
+      "scores": {
+        "business_impact": 4,
+        "manual_effort_reduction": 4,
+        "data_readiness": 4,
+        "integration_complexity": 2,
+        "risk_level": 2,
+        "human_approval_need": 3,
+        "executive_visibility": 5
+      },
+      "recommendation": "AUTOMATE_NOW",
+      "human_approval_gate": "Operations leader approves digest before executive distribution.",
+      "failure_definition": "Agent omits a material blocker, misstates a decision owner, or summarizes stale status as current.",
+      "first_30_day_action": "Prototype with one weekly status package and validate summary accuracy with the operations owner."
+    },
+    {
+      "id": "AUTO-007",
+      "name": "AP Invoice Exception Routing",
+      "department": "Finance / Accounting",
+      "workflow_owner_role": "Accounts Payable Manager",
+      "current_state": "Invoice exceptions are reviewed manually and routed by email when vendor, PO, amount, or approval data does not match.",
+      "systems_involved": [
+        "AP platform",
+        "ERP",
+        "email",
+        "vendor master"
+      ],
+      "manual_pain": "Exception review slows payment cycles and creates repeated follow-up between AP, procurement, and business owners.",
+      "automation_concept": "AP Exception Routing Agent that classifies exception type, identifies missing data, and routes to the correct owner.",
+      "scores": {
+        "business_impact": 5,
+        "manual_effort_reduction": 4,
+        "data_readiness": 3,
+        "integration_complexity": 3,
+        "risk_level": 4,
+        "human_approval_need": 5,
+        "executive_visibility": 4
+      },
+      "recommendation": "HUMAN_IN_THE_LOOP",
+      "human_approval_gate": "AP manager approves exception resolution and payment action.",
+      "failure_definition": "Agent routes exception incorrectly, approves payment, or fails to flag a material mismatch.",
+      "first_30_day_action": "Classify top exception types and build routing logic for non-payment recommendations only."
+    },
+    {
+      "id": "AUTO-008",
+      "name": "Policy and Procedure Search Assistant",
+      "department": "Corporate Operations / Legal",
+      "workflow_owner_role": "Operations or Compliance Lead",
+      "current_state": "Employees search across shared drives and policy documents for process answers, often relying on outdated files or informal knowledge.",
+      "systems_involved": [
+        "SharePoint / shared drive",
+        "policy documents",
+        "employee handbook",
+        "department SOPs"
+      ],
+      "manual_pain": "Teams lose time locating current procedures and may act on outdated guidance.",
+      "automation_concept": "Policy Search Assistant that retrieves approved policy language, summarizes relevant sections, and links to source documents.",
+      "scores": {
+        "business_impact": 3,
+        "manual_effort_reduction": 4,
+        "data_readiness": 3,
+        "integration_complexity": 2,
+        "risk_level": 3,
+        "human_approval_need": 3,
+        "executive_visibility": 3
+      },
+      "recommendation": "PROTOTYPE_FIRST",
+      "human_approval_gate": "Policy owner approves source library and response boundaries.",
+      "failure_definition": "Assistant cites outdated policy or presents a summary as formal approval.",
+      "first_30_day_action": "Create a controlled source library of approved documents and test retrieval accuracy against common questions."
+    }
+  ]
+}
