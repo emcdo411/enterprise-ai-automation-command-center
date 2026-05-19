@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Enterprise AI Automation Command Center · Back-Office AI Architecture</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #07080c;
+    --panel: #10131b;
+    --panel2: #151a25;
+    --panel3: #0c1018;
+    --ink: #f7f8fb;
+    --muted: rgba(247,248,251,0.68);
+    --dim: rgba(247,248,251,0.42);
+    --line: rgba(255,255,255,0.10);
+    --blue: #4f7cff;
+    --blue2: #2843c9;
+    --cyan: #47d7ff;
+    --green: #40d98f;
+    --amber: #ffbf47;
+    --red: #ff4c5f;
+    --purple: #9c7cff;
+    --mono: "JetBrains Mono", monospace;
+    --display: "Bebas Neue", sans-serif;
+    --sans: "Inter", system-ui, sans-serif;
+    --shadow: 0 30px 90px rgba(0,0,0,0.48);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    min-height: 100vh;
+    font-family: var(--sans);
+    color: var(--ink);
+    background:
+      radial-gradient(circle at 8% 4%, rgba(79,124,255,0.30), transparent 29%),
+      radial-gradient(circle at 86% 8%, rgba(71,215,255,0.16), transparent 31%),
+      radial-gradient(circle at 70% 70%, rgba(156,124,255,0.09), transparent 30%),
+      linear-gradient(135deg, #07080c 0%, #0b1020 48%, #050609 100%);
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.045) 1px, transparent 1px);
+    background-size: 54px 54px;
+    opacity: 0.52;
+    mask-image: linear-gradient(to bottom, #000, transparent 86%);
+  }
+
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(180deg, transparent 0%, rgba(7,8,12,0.45) 100%);
+  }
+
+  a { color: inherit; }
+  .shell { position: relative; z-index: 1; }
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    border-bottom: 1px solid var(--line);
+    background: rgba(7,8,12,0.86);
+    backdrop-filter: blur(18px);
+  }
+
+  .topbar-inner {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: max-content;
+  }
+
+  .mark {
+    width: 42px;
+    height: 42px;
+    display: grid;
+    place-items: center;
+    border-radius: 6px;
+    background: linear-gradient(135deg, var(--blue), #273b9f);
+    box-shadow: 0 0 32px rgba(79,124,255,0.28);
+    font-family: var(--mono);
+    font-weight: 900;
+    letter-spacing: -0.09em;
+  }
+
+  .brand strong {
+    display: block;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .brand span {
+    display: block;
+    margin-top: 2px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--dim);
+    letter-spacing: 0.08em;
+  }
+
+  .nav-meta {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    color: var(--dim);
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .status {
+    color: var(--green);
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .status::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 18px rgba(64,217,143,0.62);
+  }
+
+  .hero {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 82px 24px 54px;
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 40px;
+    align-items: center;
+  }
+
+  .kicker {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 22px;
+    color: var(--cyan);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .kicker::before {
+    content: "";
+    width: 38px;
+    height: 2px;
+    background: var(--cyan);
+    box-shadow: 0 0 16px rgba(71,215,255,0.45);
+  }
+
+  h1 {
+    max-width: 760px;
+    font-family: var(--display);
+    font-size: clamp(66px, 9vw, 118px);
+    line-height: 0.84;
+    letter-spacing: 0.015em;
+    text-transform: uppercase;
+  }
+
+  h1 span {
+    color: var(--cyan);
+    text-shadow: 0 0 42px rgba(71,215,255,0.22);
+  }
+
+  .hero-copy {
+    margin-top: 24px;
+    max-width: 690px;
+    color: var(--muted);
+    font-size: 17px;
+    line-height: 1.72;
+  }
+
+  .hero-copy b { color: var(--ink); }
+
+  .actions {
+    margin-top: 34px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .btn {
+    min-height: 48px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 18px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: 0.2s ease;
+  }
+
+  .btn.primary {
+    background: linear-gradient(135deg, var(--blue), #2843c9);
+    color: #fff;
+    box-shadow: 0 0 34px rgba(79,124,255,0.25);
+  }
+
+  .btn.ghost {
+    border: 1px solid var(--line);
+    background: rgba(255,255,255,0.045);
+    color: var(--muted);
+  }
+
+  .btn:hover { transform: translateY(-2px); filter: brightness(1.08); }
+
+  .command-card {
+    background:
+      linear-gradient(140deg, rgba(79,124,255,0.20), transparent 42%),
+      linear-gradient(180deg, rgba(21,25,36,0.98), rgba(8,10,15,0.98));
+    border: 1px solid rgba(79,124,255,0.35);
+    border-radius: 16px;
+    box-shadow: var(--shadow), 0 0 68px rgba(79,124,255,0.10);
+    overflow: hidden;
+  }
+
+  .card-header {
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    color: var(--dim);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .metric-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    background: var(--line);
+    gap: 1px;
+  }
+
+  .metric {
+    min-height: 145px;
+    padding: 23px 20px;
+    background: rgba(16,19,27,0.98);
+  }
+
+  .metric.big { grid-column: span 2; min-height: 180px; }
+
+  .metric-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--dim);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .metric-value {
+    margin-top: 10px;
+    font-family: var(--display);
+    font-size: 72px;
+    line-height: 0.84;
+    color: var(--cyan);
+    text-shadow: 0 0 32px rgba(71,215,255,0.16);
+  }
+
+  .metric:not(.big) .metric-value { font-size: 58px; }
+
+  .metric-copy {
+    margin-top: 10px;
+    color: var(--muted);
+    font-size: 12.5px;
+    line-height: 1.6;
+  }
+
+  .tag-row {
+    margin-top: 24px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .tag {
+    border: 1px solid rgba(71,215,255,0.28);
+    color: rgba(247,248,251,0.84);
+    background: rgba(71,215,255,0.07);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    padding: 8px 9px;
+    border-radius: 4px;
+  }
+
+  .tag.green { border-color: rgba(64,217,143,0.32); background: rgba(64,217,143,0.08); color: #9ff2c9; }
+  .tag.amber { border-color: rgba(255,191,71,0.35); background: rgba(255,191,71,0.08); color: #ffd890; }
+  .tag.red { border-color: rgba(255,76,95,0.35); background: rgba(255,76,95,0.08); color: #ff9aa7; }
+
+  section {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 58px 24px;
+    border-top: 1px solid var(--line);
+  }
+
+  .section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 32px;
+    margin-bottom: 28px;
+  }
+
+  .section-num {
+    font-family: var(--mono);
+    color: var(--cyan);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  h2 {
+    font-family: var(--display);
+    font-size: clamp(48px, 6vw, 78px);
+    line-height: 0.88;
+    letter-spacing: 0.015em;
+    text-transform: uppercase;
+  }
+
+  h2 span { color: var(--cyan); }
+
+  .section-note {
+    max-width: 430px;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.68;
+  }
+
+  .brief {
+    border: 1px solid rgba(79,124,255,0.26);
+    border-left: 5px solid var(--blue);
+    border-radius: 12px;
+    background: rgba(16,19,27,0.82);
+    padding: 28px;
+    box-shadow: 0 0 50px rgba(79,124,255,0.07);
+  }
+
+  .brief strong {
+    display: block;
+    margin-bottom: 12px;
+    color: var(--cyan);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.17em;
+    text-transform: uppercase;
+  }
+
+  .brief p {
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.78;
+  }
+
+  .questions {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+
+  .question-card {
+    min-height: 350px;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 26px;
+    background:
+      radial-gradient(circle at 90% 0%, rgba(71,215,255,0.11), transparent 35%),
+      linear-gradient(180deg, rgba(21,25,36,0.96), rgba(10,13,19,0.98));
+    transition: 0.22s ease;
+  }
+
+  .question-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(71,215,255,0.38);
+    box-shadow: 0 18px 60px rgba(0,0,0,0.28);
+  }
+
+  .role {
+    display: inline-flex;
+    padding: 7px 9px;
+    border: 1px solid rgba(71,215,255,0.28);
+    border-radius: 4px;
+    color: var(--cyan);
+    background: rgba(71,215,255,0.07);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .question-card h3 {
+    margin-top: 22px;
+    font-size: 24px;
+    line-height: 1.16;
+    letter-spacing: -0.03em;
+  }
+
+  .question-card p {
+    margin-top: 16px;
+    color: var(--muted);
+    font-size: 13.5px;
+    line-height: 1.7;
+  }
+
+  .question-card .why {
+    margin-top: 20px;
+    border-top: 1px solid var(--line);
+    padding-top: 16px;
+    color: rgba(247,248,251,0.86);
+    font-family: var(--mono);
+    font-size: 11px;
+    line-height: 1.55;
+  }
+
+  .flow {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+    align-items: stretch;
+  }
+
+  .flow-step {
+    background: rgba(255,255,255,0.045);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 17px 13px;
+    min-height: 126px;
+  }
+
+  .flow-step b {
+    display: block;
+    font-family: var(--mono);
+    color: var(--cyan);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 9px;
+  }
+
+  .flow-step span {
+    display: block;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.52;
+  }
+
+  .image-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+
+  .image-card {
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    overflow: hidden;
+    background: rgba(16,19,27,0.84);
+    box-shadow: var(--shadow);
+  }
+
+  .image-card img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .image-caption {
+    padding: 16px 18px;
+    border-top: 1px solid var(--line);
+  }
+
+  .image-caption b {
+    display: block;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--cyan);
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    margin-bottom: 7px;
+  }
+
+  .image-caption p {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .matrix {
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: rgba(16,19,27,0.82);
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: 1.55fr 0.85fr 0.8fr 0.8fr 1fr;
+    gap: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .row:last-child { border-bottom: none; }
+  .row.header { background: rgba(79,124,255,0.14); }
+
+  .cell {
+    padding: 15px 14px;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.45;
+    border-right: 1px solid var(--line);
+  }
+
+  .cell:last-child { border-right: none; }
+
+  .header .cell {
+    color: var(--ink);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 800;
+  }
+
+  .cell strong { color: var(--ink); }
+
+  .pill {
+    display: inline-flex;
+    border-radius: 999px;
+    padding: 5px 8px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    border: 1px solid;
+  }
+
+  .pill.green { color: #9ff2c9; border-color: rgba(64,217,143,0.36); background: rgba(64,217,143,0.08); }
+  .pill.blue { color: #9db5ff; border-color: rgba(79,124,255,0.42); background: rgba(79,124,255,0.09); }
+  .pill.amber { color: #ffd890; border-color: rgba(255,191,71,0.42); background: rgba(255,191,71,0.08); }
+  .pill.red { color: #ff9aa7; border-color: rgba(255,76,95,0.42); background: rgba(255,76,95,0.08); }
+
+  .agent-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+  }
+
+  .agent {
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--cyan);
+    border-radius: 12px;
+    padding: 22px;
+    background: rgba(16,19,27,0.82);
+    min-height: 250px;
+  }
+
+  .agent h3 {
+    font-size: 18px;
+    line-height: 1.22;
+    margin-bottom: 12px;
+  }
+
+  .agent p {
+    color: var(--muted);
+    font-size: 12.5px;
+    line-height: 1.65;
+  }
+
+  .governance {
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: 18px;
+    align-items: stretch;
+  }
+
+  .rulebox, .planbox {
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 25px;
+    background: rgba(16,19,27,0.82);
+  }
+
+  .rulebox h3, .planbox h3 {
+    font-family: var(--display);
+    font-size: 42px;
+    line-height: 0.9;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+  }
+
+  .rulebox ul, .planbox ol {
+    margin-top: 22px;
+    display: grid;
+    gap: 10px;
+    list-style-position: inside;
+  }
+
+  .rulebox li, .planbox li {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.55;
+  }
+
+  .cta {
+    border: 1px solid rgba(79,124,255,0.35);
+    border-radius: 18px;
+    background:
+      radial-gradient(circle at 80% 0%, rgba(71,215,255,0.14), transparent 32%),
+      linear-gradient(135deg, rgba(21,25,36,0.98), rgba(8,10,15,0.98));
+    padding: 34px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 26px;
+    align-items: center;
+    box-shadow: var(--shadow);
+  }
+
+  .cta h2 { max-width: 720px; }
+  .cta p {
+    margin-top: 15px;
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.7;
+    max-width: 760px;
+  }
+
+  footer {
+    border-top: 1px solid var(--line);
+    padding: 28px 24px;
+    background: rgba(7,8,12,0.86);
+  }
+
+  .footer-inner {
+    max-width: 1180px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    gap: 24px;
+    color: var(--dim);
+    font-family: var(--mono);
+    font-size: 10px;
+    line-height: 1.6;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  @media (max-width: 1000px) {
+    .hero, .questions, .image-grid, .governance, .cta { grid-template-columns: 1fr; }
+    .flow { grid-template-columns: repeat(2, 1fr); }
+    .agent-grid { grid-template-columns: repeat(2, 1fr); }
+    .section-head { display: block; }
+    .section-note { margin-top: 14px; }
+    .nav-meta { display: none; }
+  }
+
+  @media (max-width: 650px) {
+    .topbar-inner, .hero, section { padding-left: 18px; padding-right: 18px; }
+    h1 { font-size: 66px; }
+    h2 { font-size: 50px; }
+    .metric-grid, .flow, .agent-grid { grid-template-columns: 1fr; }
+    .metric.big { grid-column: span 1; }
+    .row { grid-template-columns: 1fr; }
+    .cell { border-right: none; border-bottom: 1px solid var(--line); }
+    .cell:last-child { border-bottom: none; }
+    .footer-inner { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="mark">AI</div>
+        <div>
+          <strong>Enterprise AI Automation Command Center</strong>
+          <span>Back-office operations · AI agents · workflow architecture</span>
+        </div>
+      </div>
+      <div class="nav-meta">
+        <span class="status">Mock architecture active</span>
+        <span>No rip-and-replace</span>
+        <span>Human approval gates</span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <p class="kicker">Enterprise AI Function · Finance · Accounting · Legal · Corporate Ops</p>
+        <h1>AI that ships inside <span>real workflows.</span></h1>
+        <p class="hero-copy">
+          A mock solution architecture for standing up a first enterprise AI automation function across back-office operations. The model is built around a simple operating principle: <b>do not replace the enterprise stack first; reduce the manual work between systems first.</b>
+        </p>
+        <div class="tag-row">
+          <span class="tag">Production-grade automations</span>
+          <span class="tag">AI agents</span>
+          <span class="tag">APIs / ETL / workflows</span>
+          <span class="tag green">Executive visibility</span>
+          <span class="tag amber">Human-in-the-loop</span>
+          <span class="tag red">No AI theater</span>
+        </div>
+        <div class="actions">
+          <a class="btn primary" href="#questions">View the 3 Questions</a>
+          <a class="btn ghost" href="README.md">Open README</a>
+          <a class="btn ghost" href="docs/solution-architecture.md">Architecture Docs</a>
+        </div>
+      </div>
+
+      <aside class="command-card" aria-label="Command center metrics">
+        <div class="card-header">
+          <span>Executive Pilot View</span>
+          <span>Portfolio Artifact</span>
+        </div>
+        <div class="metric-grid">
+          <div class="metric big">
+            <p class="metric-label">Architecture Verdict</p>
+            <div class="metric-value">BUILD THE LAYER</div>
+            <p class="metric-copy">The first enterprise AI function needs intake, scoring, governance, integration, and visibility before it needs a large model strategy.</p>
+          </div>
+          <div class="metric">
+            <p class="metric-label">Use Case Lanes</p>
+            <div class="metric-value">04</div>
+            <p class="metric-copy">Finance, accounting, legal, and corporate operations.</p>
+          </div>
+          <div class="metric">
+            <p class="metric-label">Candidate Workflows</p>
+            <div class="metric-value">08</div>
+            <p class="metric-copy">Mock automation candidates scored for value, risk, and readiness.</p>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <p class="section-num">00 · Executive Brief</p>
+          <h2>The work is not in the model. <span>It is between systems.</span></h2>
+        </div>
+        <p class="section-note">This page is a mock role-fit artifact. It does not use confidential data. It shows how an enterprise AI automation function could be structured when the goal is practical deployment, not AI theater.</p>
+      </div>
+      <div class="brief">
+        <strong>Operating Thesis</strong>
+        <p>
+          Most back-office AI opportunities begin as manual work hidden inside spreadsheets, email approvals, exported reports, contract attachments, status meetings, and undocumented workarounds. The first enterprise AI function should identify those workflows, score them, route them, govern them, and show leadership where automation is actually moving the business.
+        </p>
+      </div>
+    </section>
+
+    <section id="questions">
+      <div class="section-head">
+        <div>
+          <p class="section-num">01 · Three Questions</p>
+          <h2>Questions that expose whether AI can <span>actually operate.</span></h2>
+        </div>
+        <p class="section-note">Each question is aimed at a different executive reality: operating value, technical feasibility, and delivery truth. If the answer is vague, the automation is not ready yet.</p>
+      </div>
+
+      <div class="questions">
+        <article class="question-card">
+          <span class="role">COO Question</span>
+          <h3>Which manual workflow, if removed this quarter, would create the most visible operational lift without creating new approval risk?</h3>
+          <p>This forces the business to name a workflow with real operating value, not a generic AI ambition. It separates high-friction work from work that merely feels annoying.</p>
+          <div class="why">Pause point: if leadership cannot name the workflow, the AI function will drift into experiments instead of execution.</div>
+        </article>
+
+        <article class="question-card">
+          <span class="role">CTO Question</span>
+          <h3>Can this automation connect to the systems of record through APIs, ETL, or workflow tools without creating a parallel shadow system?</h3>
+          <p>This tests whether the AI layer strengthens the enterprise architecture or quietly fragments it. No rip-and-replace does not mean no architecture discipline.</p>
+          <div class="why">Pause point: if the integration path is unclear, the automation may become a polished demo with no production spine.</div>
+        </article>
+
+        <article class="question-card">
+          <span class="role">Solutions Architect / Project Lead Question</span>
+          <h3>What is the failure definition, who owns the human approval gate, and what evidence proves this pilot is ready to move into production?</h3>
+          <p>This turns AI from a prototype into a controlled delivery object. Every agent needs acceptance criteria, owner accountability, and a measurable path to production.</p>
+          <div class="why">Pause point: if failure cannot be defined, success cannot be trusted.</div>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <p class="section-num">02 · Operating Flow</p>
+          <h2>From request to governed <span>deployment.</span></h2>
+        </div>
+        <p class="section-note">The command center acts as the operating layer for turning scattered automation requests into prioritized, governed, production-aware work.</p>
+      </div>
+
+      <div class="flow">
+        <div class="flow-step"><b>01 Intake</b><span>Capture the workflow, owner, systems, manual effort, and current pain.</span></div>
+        <div class="flow-step"><b>02 Constraints</b><span>Map technical, operational, human, and organizational reality before recommending AI.</span></div>
+        <div class="flow-step"><b>03 Decision Gate</b><span>Determine whether AI belongs in the workflow and where human approval is required.</span></div>
+        <div class="flow-step"><b>04 Score</b><span>Rank business impact, data readiness, risk, feasibility, and executive visibility.</span></div>
+        <div class="flow-step"><b>05 Build Path</b><span>Route to workflow automation, human-in-the-loop agent, decision support, or data cleanup.</span></div>
+        <div class="flow-step"><b>06 Visibility</b><span>Show leadership what is deployed, blocked, valuable, risky, and ready for the next sprint.</span></div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <p class="section-num">03 · Architecture Assets</p>
+          <h2>The repo includes the <span>operating model.</span></h2>
+        </div>
+        <p class="section-note">The visuals are designed to make the architecture legible to executives while still showing systems thinking: intake, scoring, integration, governance, and dashboard visibility.</p>
+      </div>
+
+      <div class="image-grid">
+        <div class="image-card">
+          <img src="assets/architecture-diagram.png" alt="Enterprise AI automation architecture diagram">
+          <div class="image-caption">
+            <b>Solution Architecture Diagram</b>
+            <p>Shows the core relationship between business workflow requests, system constraints, decision gates, data readiness, AI agents, human approval, and existing systems.</p>
+          </div>
+        </div>
+        <div class="image-card">
+          <img src="assets/dashboard-preview.png" alt="Enterprise AI automation dashboard preview">
+          <div class="image-caption">
+            <b>Executive Dashboard Preview</b>
+            <p>Shows how leadership could view automation candidates, active pilots, production-ready workflows, governance rules, and the 30-day execution model.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <p class="section-num">04 · Candidate Matrix</p>
+          <h2>Not every workflow deserves <span>automation.</span></h2>
+        </div>
+        <p class="section-note">The scoring matrix prevents the common failure mode: automating whatever is loudest instead of what is ready, valuable, and governable.</p>
+      </div>
+
+      <div class="matrix">
+        <div class="row header">
+          <div class="cell">Candidate</div>
+          <div class="cell">Department</div>
+          <div class="cell">Data</div>
+          <div class="cell">Risk</div>
+          <div class="cell">Recommendation</div>
+        </div>
+        <div class="row">
+          <div class="cell"><strong>Accounting close-cycle tracker</strong><br>Task tracking, blockers, and escalation.</div>
+          <div class="cell">Accounting</div>
+          <div class="cell">High</div>
+          <div class="cell">Medium</div>
+          <div class="cell"><span class="pill green">Automate Now</span></div>
+        </div>
+        <div class="row">
+          <div class="cell"><strong>Monthly finance report summary</strong><br>Variance commentary from approved sources.</div>
+          <div class="cell">Finance</div>
+          <div class="cell">Medium</div>
+          <div class="cell">Medium</div>
+          <div class="cell"><span class="pill blue">Prototype First</span></div>
+        </div>
+        <div class="row">
+          <div class="cell"><strong>Legal contract intake summarizer</strong><br>Request summary, missing docs, route to review.</div>
+          <div class="cell">Legal</div>
+          <div class="cell">Medium</div>
+          <div class="cell">High</div>
+          <div class="cell"><span class="pill amber">Human Review</span></div>
+        </div>
+        <div class="row">
+          <div class="cell"><strong>Manual spreadsheet consolidation</strong><br>Recurring report cleanup and data normalization.</div>
+          <div class="cell">Finance / Ops</div>
+          <div class="cell">Low</div>
+          <div class="cell">Medium</div>
+          <div class="cell"><span class="pill red">Data Cleanup</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <p class="section-num">05 · Agent Concepts</p>
+          <h2>Useful agents are scoped around <span>decision points.</span></h2>
+        </div>
+        <p class="section-note">These are not generic chatbots. Each concept has a workflow owner, input surface, output boundary, and human approval point.</p>
+      </div>
+
+      <div class="agent-grid">
+        <article class="agent">
+          <h3>Finance Reporting Agent</h3>
+          <p>Drafts recurring reporting summaries and variance commentary from approved sources. Finance leadership approves final output.</p>
+        </article>
+        <article class="agent">
+          <h3>Accounting Close Assistant</h3>
+          <p>Tracks close tasks, missing reconciliations, blockers, and owner follow-ups while preserving accounting leadership authority.</p>
+        </article>
+        <article class="agent">
+          <h3>Legal Intake Agent</h3>
+          <p>Summarizes requests, identifies missing materials, extracts key terms, and routes matters to legal review without giving legal advice.</p>
+        </article>
+        <article class="agent">
+          <h3>Spreadsheet Replacement Pipeline</h3>
+          <p>Maps recurring manual spreadsheet workflows into structured data pipelines, dashboards, and governed reporting flows.</p>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <p class="section-num">06 · Governance + Execution</p>
+          <h2>Speed without governance creates <span>expensive demos.</span></h2>
+        </div>
+        <p class="section-note">The purpose of governance here is not to slow the AI function down. It is to make speed sustainable.</p>
+      </div>
+
+      <div class="governance">
+        <div class="rulebox">
+          <h3>Governance Rules</h3>
+          <ul>
+            <li>AI recommends. Humans approve consequential decisions.</li>
+            <li>Existing systems remain systems of record.</li>
+            <li>Every automation has a named owner and failure definition.</li>
+            <li>Sensitive workflows require audit trails and override logging.</li>
+            <li>If no one acts on the output, it is not an automation priority.</li>
+          </ul>
+        </div>
+        <div class="planbox">
+          <h3>30-Day Pilot Path</h3>
+          <ol>
+            <li><b>Week 1:</b> Workflow intake, stakeholder discovery, and system mapping.</li>
+            <li><b>Week 2:</b> Candidate scoring, first use case selection, and agent specification.</li>
+            <li><b>Week 3:</b> Prototype build with sample data and governance review.</li>
+            <li><b>Week 4:</b> Pilot validation, executive readout, and production recommendation.</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="cta">
+        <div>
+          <p class="section-num">Repo Intent</p>
+          <h2>Built as a <span>role-fit artifact.</span></h2>
+          <p>This page is a mock architecture, not client data. It demonstrates how I think about standing up a first enterprise AI automation function: workflow-first, integration-aware, human-governed, and executive-visible.</p>
+        </div>
+        <div class="actions">
+          <a class="btn primary" href="README.md">Read the Full README</a>
+          <a class="btn ghost" href="data/sample-automation-candidates.json">View Sample Data</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <div>Erwin Maurice McDonald · Fort Worth, TX<br>AI Solutions Architect · Enterprise Systems Analyst · Prompt and Context Engineering</div>
+      <div>Mock portfolio artifact<br>No confidential client or employer data</div>
+    </div>
+  </footer>
+</div>
+</body>
+</html>
